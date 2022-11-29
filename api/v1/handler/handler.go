@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"demo1/database/model"
+	"demo1/internal/entity"
 	"fmt"
 	"net/http"
 
@@ -14,8 +14,7 @@ type UserHandler struct {
 }
 
 func (h *UserHandler) GetAllUser(c *gin.Context) {
-	users := []model.User{}
-
+	users := []entity.User{}
 	h.DB.Find(&users)
 
 	c.JSON(http.StatusOK, gin.H{
@@ -26,7 +25,7 @@ func (h *UserHandler) GetAllUser(c *gin.Context) {
 
 func (h *UserHandler) GetUser(c *gin.Context) {
 	id := c.Param("id")
-	user := model.User{}
+	user := entity.User{}
 
 	if err := h.DB.Find(&user, id).Error; err != nil {
 		c.Status(http.StatusNotFound)
@@ -39,7 +38,7 @@ func (h *UserHandler) GetUser(c *gin.Context) {
 			"data":   nil,
 		})
 	} else {
-		data := []model.User{}
+		data := []entity.User{}
 		data = append(data, user)
 		c.JSON(http.StatusOK, gin.H{
 			"status": http.StatusOK,
@@ -50,7 +49,7 @@ func (h *UserHandler) GetUser(c *gin.Context) {
 }
 
 func (h *UserHandler) SaveUser(c *gin.Context) {
-	user := model.User{}
+	user := entity.User{}
 
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.Status(http.StatusBadRequest)
@@ -62,5 +61,42 @@ func (h *UserHandler) SaveUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	data := []entity.User{}
+	data = append(data, user)
+	c.JSON(http.StatusOK, gin.H{
+		"status": http.StatusOK,
+		"data":   data,
+	})
+}
+
+func (h *UserHandler) UpdateUser(c *gin.Context) {
+	id := c.Param("id")
+	user := entity.User{}
+	body := entity.User{}
+
+	if err := h.DB.Find(&user, id).Error; err != nil {
+		c.Status(http.StatusNotFound)
+		return
+	}
+
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+	user.FirstName = body.FirstName
+	user.LastName = body.LastName
+	user.Age = body.Age
+	user.Email = body.Email
+
+	if err := h.DB.Save(&user).Error; err != nil {
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+	data := []entity.User{}
+	data = append(data, user)
+	c.JSON(http.StatusOK, gin.H{
+		"status": http.StatusOK,
+		"data":   data,
+	})
+
 }

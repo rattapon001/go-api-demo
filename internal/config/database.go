@@ -1,4 +1,4 @@
-package database
+package config
 
 import (
 	"log"
@@ -8,10 +8,10 @@ import (
 
 	"gorm.io/gorm"
 
-	"demo1/database/model"
+	"demo1/internal/entity"
 )
 
-func Initialize() *gorm.DB {
+func InitializeDatabase() *gorm.DB {
 
 	dbHost := "host=" + os.Getenv("DB_HOST")
 	dbUsername := "user=" + os.Getenv("DB_USERNAME")
@@ -24,6 +24,6 @@ func Initialize() *gorm.DB {
 		log.Fatal(err)
 	}
 
-	db.AutoMigrate(&model.User{}, model.MediaObject{})
+	db.AutoMigrate(&entity.User{}, entity.MediaObject{})
 	return db
 }

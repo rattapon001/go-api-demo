@@ -2,8 +2,8 @@ package router
 
 import (
 	"bytes"
-	"demo1/database"
-	"demo1/handler"
+	"demo1/api/v1/handler"
+	"demo1/internal/config"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -23,21 +23,23 @@ func logResponseBody(c *gin.Context) {
 	w := &responseBodyWriter{body: &bytes.Buffer{}, ResponseWriter: c.Writer}
 	c.Writer = w
 	c.Next()
+	// c.JSON(http.StatusOK, gin.H{
+	// 	"status": http.StatusOK,
+	// 	"data":   nil,
+	// })
 	fmt.Println("Response body: " + w.body.String())
 }
 
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
 	r.Use(logResponseBody)
-	db := database.Initialize()
+	db := config.InitializeDatabase()
 	UserRouter(r, db)
 	r.GET("/ping")
 
 	fileHandler := handler.FileHandler{}
 	fileHandler.DB = db
 	r.POST("/upload", fileHandler.UploadFile)
-	// r.PUT("/customers/:id", h.UpdateCustomer)
-	// r.DELETE("/customers/:id", h.DeleteCustomer)
 
 	return r
 }

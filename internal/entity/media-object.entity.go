@@ -1,4 +1,4 @@
-package model
+package entity
 
 import (
 	"github.com/google/uuid"
@@ -8,14 +8,6 @@ import (
 func (m *MediaObject) BeforeCreate(tx *gorm.DB) (err error) {
 	m.Id = uuid.New()
 	return
-}
-
-type User struct {
-	Id        uint   `gorm:"primary_key" json:"id" gorm:"autoIncrement"`
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Age       int    `json:"age"`
-	Email     string `json:"email"`
 }
 
 type MediaObject struct {

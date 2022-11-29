@@ -2,14 +2,13 @@ package handler
 
 import (
 	"context"
+	"demo1/internal/entity"
+	minioClient "demo1/internal/minio_client"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"time"
-
-	"demo1/database/model"
-	minioClient "demo1/minio_client"
 
 	"github.com/gin-gonic/gin"
 	"github.com/minio/minio-go/v7"
@@ -47,7 +46,7 @@ func (h *FileHandler) UploadFile(c *gin.Context) {
 	}
 	log.Printf("Successfully uploaded %s of size %d\n", file.Filename, info.Size)
 
-	mediaObject := model.MediaObject{}
+	mediaObject := entity.MediaObject{}
 
 	mediaObject.DirectoryName = "demo1"
 	mediaObject.FilePath = fileName
@@ -57,7 +56,7 @@ func (h *FileHandler) UploadFile(c *gin.Context) {
 		return
 	}
 
-	resData := []model.MediaObject{}
+	resData := []entity.MediaObject{}
 	resData = append(resData, mediaObject)
 	c.JSON(http.StatusOK, gin.H{
 		"status": http.StatusOK,
