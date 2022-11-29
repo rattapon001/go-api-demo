@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -37,7 +38,12 @@ func (h *FileHandler) UploadFile(c *gin.Context) {
 	info, err := minioUpload.PutObject(ctx, bucketName, "demo1/"+fileName, f, file.Size, minio.PutObjectOptions{ContentType: contentType})
 
 	if err != nil {
-		log.Fatalln(err)
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": http.StatusInternalServerError,
+			"data":   nil,
+		})
+		return
 	}
 	log.Printf("Successfully uploaded %s of size %d\n", file.Filename, info.Size)
 
