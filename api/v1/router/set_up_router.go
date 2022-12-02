@@ -3,7 +3,7 @@ package router
 import (
 	"bytes"
 	"demo1/api/v1/handler"
-	"demo1/internal/config"
+	"demo1/pkg/database"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -23,17 +23,12 @@ func logResponseBody(c *gin.Context) {
 	w := &responseBodyWriter{body: &bytes.Buffer{}, ResponseWriter: c.Writer}
 	c.Writer = w
 	c.Next()
-	// c.JSON(http.StatusOK, gin.H{
-	// 	"status": http.StatusOK,
-	// 	"data":   nil,
-	// })
 	fmt.Println("Response body: " + w.body.String())
 }
 
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
-	r.Use(logResponseBody)
-	db := config.InitializeDatabase()
+	db := database.InitializeDatabase()
 	UserRouter(r, db)
 	r.GET("/ping")
 
